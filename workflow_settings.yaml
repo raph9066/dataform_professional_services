@@ -1,0 +1,5 @@
+defaultProject: rax-datascience
+defaultLocation: US
+defaultDataset: professional_services
+defaultAssertionDataset: professional_services_assertions
+dataformCoreVersion: 3.0.0

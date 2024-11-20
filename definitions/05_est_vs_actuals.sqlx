@@ -1,0 +1,70 @@
+config { type: "view" }
+
+SELECT 
+    p.pse__project_id AS `Project: Project ID`,
+    p.pse__start_date AS `Project: Start Date`,
+    p.pse__end_date AS `Project: End Date`,
+    p.pse__billing_type AS `Project: Billing Type`,
+    r.namex AS `Project: Region`,
+    p.namex AS `Project: Project Name`,
+    p.pse__is_billable AS `Project: Billable`,
+    p.ps_probability AS `Project: PS Probability`,
+    a.namex AS `Assignment`,
+    p.pse__stage AS `Project: Stage`,
+    e.pse__time_period AS `Time Period`,--find
+    e.pse__start_date AS `Start Date`,
+    e.pse__end_date AS `End Date`,
+    e.pse__estimated_hours AS `Estimated Hours`,
+    e.pse__actual_hours AS `Actual Hours`,
+    qc.namex AS  `Resource`,
+    qc2.namex as `Project Manager`,
+    quo.namex AS `Project: Owner Name`,
+    pr.namex AS `Project: Practice`,
+    q.opportunity_id AS `Project: Opportunity Number`,
+    q.namex AS `Project: Opportunity`,
+    qa.namex AS `Project: Account`,
+    e.id AS `Est Vs Actuals: ID`,
+    q.stagename AS `Project: Opportunity Stage`
+FROM 
+    `rax-landing.salesforce_ods.qpse__est_vs_actuals` e 
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qpse__proj` p
+on   e.pse__project = p.id
+
+
+left join
+    `rax-landing.salesforce_ods.qpse__region` r
+ON p.pse__region = r.id
+
+
+left join `rax-landing.salesforce_ods.qpse__assignment` as a
+on e.pse__assignment = a.id
+   
+left join rax-landing.salesforce_ods.quser as quo
+on lower(e.ownerid) = lower(quo.id)
+
+left join rax-landing.salesforce_ods.quser as qum
+on lower(e.pse__project_manager) = lower(qum.profileid)
+
+left join rax-landing.salesforce_ods.qpse__practice as pr
+on p.pse__practice = pr.id
+left join rax-landing.salesforce_ods.qopportunity as q
+on p.pse__opportunity = q.id
+
+left join rax-landing.salesforce_ods.qaccount as qa
+on p.pse__account = qa.id
+
+left join rax-landing.salesforce_ods.qcontact as qc
+on e.pse__resource = qc.id
+
+left join rax-landing.salesforce_ods.qcontact as qc2
+on qc.reportstoid = qc2.id
+
+
+where 1=1
+and lower(e.pse__time_period_type) = 'week'
+and lower(p.project_business_unit) = 'private'
+and   e.isdeleted = 'false'
+and   p.isdeleted = 'false'
+and   a.isdeleted = 'false'
+--and  p.pse__project_id = 'PR-018477'
