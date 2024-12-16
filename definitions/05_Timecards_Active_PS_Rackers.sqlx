@@ -1,0 +1,82 @@
+config { type: "view" }
+
+with racker_rooster as (SELECT distinct	*
+
+ FROM `rax-landing.workday_ods.racker_roster` 
+WHERE  
+cost_center_id in ('5727', '5209','5023','5535','5430') and
+management_chain_level_03 in ('Stacey Portat','Sameer Relan')
+ ---and report_effective_date = current_date()
+ and workers_manager not in ('Srini Koushik','Jake Thielen') 
+ and hire_date <= current_date()
+ and report_effective_date=  (SELECT MAX(report_effective_date) FROM `rax-landing.workday_ods.racker_roster` )
+ ) ,
+
+final_query as
+(
+  SELECT 
+  Project.pse__project_id  AS Project,
+  Project.namex AS `PS Project: Project Name`,
+  a.namex AS Assignment,
+  qc.namex AS Resource,
+  
+  td.pse__date AS Date,
+  th.namex as timecard_header_id,
+  tc.id as timecard_id,
+  tc.namex as `Timecard ID`,
+  CASE 
+    WHEN td.pse__day_of_week = 'Monday' THEN CAST(tc.pse__monday_hours AS NUMERIC)
+    WHEN td.pse__day_of_week = 'Tuesday' THEN CAST(tc.pse__tuesday_hours AS NUMERIC)
+    WHEN td.pse__day_of_week = 'Wednesday' THEN CAST(tc.pse__wednesday_hours AS NUMERIC)
+    WHEN td.pse__day_of_week = 'Thursday' THEN CAST(tc.pse__thursday_hours AS NUMERIC)
+    WHEN td.pse__day_of_week = 'Friday' THEN CAST(tc.pse__friday_hours AS NUMERIC)
+    WHEN td.pse__day_of_week = 'Saturday' THEN CAST(tc.pse__saturday_hours AS NUMERIC)
+    WHEN td.pse__day_of_week = 'Sunday' THEN CAST(tc.pse__sunday_hours AS NUMERIC)
+    ELSE 0
+  END AS Hour,
+
+  --tc.pse__total_hours AS Hours,
+  tc.pse__total_billable_amount AS Billable_Amount,
+  tc.pse__timecard_notes AS Daily_Notes,
+  tc.pse__external_resource AS External_Resource,
+  tc.pse__status AS Status,
+  tc.pse__billable AS Billable,
+  tc.pse__exclude_from_billing AS Exclude_from_Billing,
+  qc2.namex AS Resource_Manager,  
+  qc.pse__resource_role AS Resource_Role,       
+  tc.pse__end_date AS End_Date,
+  ----(tc.pse__total_billable_amount * tc.pse__project_exchange_rate) AS Total_Billable_Amount_Converted
+FROM 
+  `rax-landing.salesforce_ods.qpse__timecard` tc
+left join `rax-landing.salesforce_ods.qpse__timecard_header` th
+  on tc.pse__timecard_header = th.id
+LEFT JOIN 
+  `rax-landing.salesforce_ods.qpse__time_date` td
+  ON tc.pse__timecard_header = td.pse__timecard
+  JOIN 
+    `rax-landing.salesforce_ods.qpse__proj` AS project
+ON 
+   tc.pse__project = project.id
+
+   left join `rax-landing.salesforce_ods.qpse__assignment` as a
+on tc.pse__assignment = a.id
+
+left join rax-landing.salesforce_ods.qcontact as qc
+on tc.pse__resource = qc.id
+
+left join rax-landing.salesforce_ods.qcontact as qc2
+on qc.reportstoid = qc2.id
+left join  racker_rooster on lower(qc.email) = lower(racker_rooster.work_email)
+where 1=1
+and lower(qc.email) = lower(racker_rooster.work_email)
+---and Project.namex  = 'SDAIA_P-Cloud Project - Phase 2 : PSO-14564'
+and safe_cast(tc.pse__total_hours as numeric) > 0
+--and qc.namex = 'Karol Zimonczyk'
+---and racker_rooster.work_email is null
+and tc.pse__end_date >= '2023-12-31'
+and safe_cast(th.isdeleted as bool) = FALSE
+and safe_cast(tc.isdeleted as bool) = FALSE
+AND safe_cast(td.isdeleted as bool) = FALSE
+)
+select * from final_query
+where Hour > 0
