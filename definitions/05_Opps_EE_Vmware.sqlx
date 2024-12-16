@@ -1,0 +1,49 @@
+config { type: "view" }
+
+SELECT 
+    opps.lbi__latticeaccountname AS `Company Name`,
+    opps.namex AS `Opportunity Name`,
+    quo.namex  AS `Opportunity Owner`,
+    opps.owner_role AS `Owner Role`,
+    opps.region AS `Region`,
+    opps.sub_service AS `Sub Region`,
+    opps.stagename AS `Stage`,
+    opps.fiscal AS `Fiscal Period`,
+    opps.closedate AS `Close Date`,
+    opps.forecastcategoryname AS `Forecast Status`,
+    opps.createddate AS `Created Date`,
+    opps.category AS `Category`,
+    opps.typex AS `Type`,
+    opps.practice_area AS `Practice Area`,
+    fa.namex AS `Focus Area: Focus Area`,
+    fa.focus_area_total AS `Focus Area: Focus Area Total converted`,
+    opps.opportunity_id AS `Opportunity Num`,
+    opps.vertical AS `Vertical`,
+    opps.business_unit AS `Business Unit`,
+    opps.id AS `Opportunity ID`,
+    opps.expectedrevenue AS `Expected Revenue`,
+    fa.focus_area_total_amount AS `Expected Revenue converted`,
+    opps.support_unit AS `Support Unit`,
+    quote_line.setup AS `ProServ Fees One Time-TCV converted`,
+    quote_line.namex AS `Quote Line: Quote Line Name`
+FROM 
+    `rax-landing.salesforce_ods.qopportunity` AS opps
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qopp_focusarea` AS fa
+    ON opps.id = fa.opportunity
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qquote_line` AS quote_line
+    ON opps.id = quote_line.opportunity_quote
+
+    left join rax-landing.salesforce_ods.quser as quo
+on lower(opps.ownerid) = lower(quo.id) 
+
+where
+    lower(quote_line.namex) in ('rackspace elastic engineering for vmware','rackspace elastic engineering for private cloud')
+    and (opps.category) not in ('Recompete - Downgrade','Recompete - Upgrade')
+    and (opps.forecastcategoryname) not in ('Omitted')
+    AND lower(opps.test_opportunity) = 'false' 
+  AND lower(opps.non_bookable_revenue) = 'false'
+    AND opps.isdeleted = 'false'
+    AND opps.closedate BETWEEN '2022-01-01' AND '2025-12-31'
+  

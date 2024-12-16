@@ -1,0 +1,80 @@
+config { type: "view" }
+
+SELECT 
+    proj.namex AS `PS Project: Project Name`,
+    proj.pse__project_id AS `Project ID`,
+    opp.opportunity_id AS `Opportunity: Opportunity Num`,
+    proj.pse__start_date AS `Start Date`,
+    proj.pse__stage AS `Stage`,
+    proj.pse__end_date AS `End Date`,
+    r.namex AS `Region`,
+    proj.pse__project_type AS `Project Type`,
+    proj.pse__project_status AS `Project Status`,
+    proj.pse__is_active AS `Active`,
+    proj.pse__group AS `Group`,---find
+    proj.pse__billing_type AS `Billing Type`,
+    opp.typex AS `Opportunity: Type`,
+    rt.namex AS `PS Project: Record Type`,
+    opp.business_unit AS `Opportunity: Business Unit`,
+    cont.namex as `Project Manager`,
+    proj.pse__bookings AS `Bookings_converted`,
+    proj.pse__billings AS `Billings_converted`,
+    proj.pse__billed AS `Billed_converted`,
+    proj.pse__margin AS `Margin_converted`,
+    proj.marginpercent AS `Margin %`,
+    proj.pse__planned_hours AS `Planned Hours`,
+    proj.project_business_unit AS `Project Business Unit`,
+    opp.id AS `Opportunity ID`,
+    opp.closedate AS `Opportunity Close Date`,
+    opp.stagename AS `Opportunity Stage`,
+    opp.forecastcategoryname AS `Opportunity: Forecast Status`,
+    opp.fiscal AS `Opportunity: Fiscal Period`,
+    opp.region AS `Opportunity: Region`,
+    opp.focus_area AS `Opportunity: Focus Area`,
+    opp.category AS `Opportunity: Category`,
+    proj.id AS `PS Project: ID`,
+    opp.lbi__latticeaccountname AS `Opportunity: Company Name`,
+    opp.namex AS `Opportunity: Opportunity Name`,
+    opp.vertical AS `Opportunity: Vertical`,
+    proj.pse__total_costs AS `Total Costs_converted`,
+    proj.pse__total_costs AS `Total Costs`,
+    quo.namex AS `Opportunity Owner`,
+    proj.budget_status_picklist AS `Budget Status`,
+    proj.budget_status AS `Budget Status`,
+    proj.schedule_status AS `Schedule Status`,
+    proj.pse__schedule_status AS `PSR Schedule Status`,
+    proj.pse__scope_status AS `PSR Scope Status`,
+    proj.scope_status AS `Scope Status`,
+    proj.resource_status AS `Resource Status`,
+    proj.financial_status AS `Financial Status`,
+    proj.pse__project_status_notes AS `Project Status Notes`,
+    proj.ffx_psr_project_status_notes AS `PSR Project Status Notes`,
+    proj.status_report_week_ending AS `Status Report Week Ending`,
+    proj.project_status_last_modified AS `Project Status Last Modified`,
+    proj.ffx_psr_overallprojectstatus AS `PSR Overall Project Status`,
+    proj.ffx_psr_financialsstatus AS `PSR Financials Status`,
+    proj.ffx_psr_remainingbillablehrs AS `PSR Remaining Billable Hours`,
+    proj.ffx_psr_projectfundremaining AS `PSR Project Funds Remaining_converted`,
+    proj.ffx_psr_currentweek_end_date AS `PSR Current Week Ending Date`,
+    proj.ffx_psr_week_ending_date AS `PSR Week Ending Date`,
+    proj.ffx_psr_nextweek_ending_date AS `PSR Next Week Ending Date`,
+    proj.psr_email_address AS `PSR Email Address`
+FROM 
+    `rax-landing.salesforce_ods.qpse__proj` AS proj
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qopportunity` AS opp
+ON 
+    proj.pse__opportunity = opp.id
+left join
+    `rax-landing.salesforce_ods.qpse__region` r
+ON proj.pse__region = r.id
+
+left join `rax-landing.salesforce_ods.qcontact` as cont on proj.pse__project_manager = cont.id
+
+left JOIN `rax-landing.salesforce_ods.qrecordtype` as rt on proj.recordtypeid = rt.id  
+
+left join rax-landing.salesforce_ods.quser as quo
+on lower(opp.ownerid) = lower(quo.id)
+
+where opp.closedate > '2021-01-01'
+and proj.isdeleted = 'false'

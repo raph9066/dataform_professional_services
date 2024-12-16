@@ -1,0 +1,61 @@
+config { type: "view" }
+
+SELECT 
+    milestone.pse__status AS `Status`,
+    project.pse__project_id AS `Project: Project ID`,
+    milestone.namex AS `Milestone: Milestone Name`,
+    project.pse__billing_type AS `Project: Billing Type`,
+    safe_cast(milestone.pse__milestone_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Milestone Amount_converted`,
+    safe_cast(milestone.pse__milestone_amount as numeric) AS `Milestone Amount`,
+    milestone.currencyisocode AS `Milestone: Currency`,
+    safe_cast(milestone.pse__target_date as date) as `Target Date`,
+    safe_cast(milestone.pse__actual_date as date) AS `Actual Date`,
+    safe_cast(milestone.pse__billable_amount_submitted as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Billable Amount Submitted_converted`,
+    safe_cast(milestone.pse__billable_amount_submitted as numeric)  AS `Billable Amount Submitted`,
+    safe_cast(milestone.pse__billable_hours_submitted as numeric) AS `Billable Hours Submitted`,
+    milestone.pse__exclude_from_billing AS `Exclude from Billing`,
+    project.pse__stage AS `Project: Stage`,
+    project.pse__project_status AS `Project: Project Status`,
+    cont.namex AS `Project: Project Manager`,
+    quo.namex AS `Project: Owner Name`,
+    r.namex AS `Project: Region`,
+    project.project_business_unit AS `Project: Project Business Unit`,
+    SUBSTR(milestone.id, 1, LENGTH(milestone.id) - 3) AS`Milestone: ID`,
+    practice.namex as `Practice`,
+
+FROM 
+    `rax-landing.salesforce_ods.qpse__milestone` AS milestone
+JOIN 
+    `rax-landing.salesforce_ods.qpse__proj` AS project
+ON 
+    milestone.pse__project = project.id
+left Join 
+    `rax-landing.salesforce_ods.qpse__practice` as practice
+on
+project.pse__practice = practice.id
+left join
+    `rax-landing.salesforce_ods.qpse__region` r
+ON project.pse__region = r.id
+left join `rax-landing.salesforce_ods.qcontact` as cont on project.pse__project_manager = cont.id
+left join rax-landing.salesforce_ods.quser as quo
+on lower(project.pse__opportunity_owner) = lower(quo.id)
+
+ LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
+  AND cr.delete_flag = 'N'
+  AND cr.isocode = milestone.currencyisocode
+  AND safe_cast(milestone.pse__target_date as date) >= cr.startdate
+  AND safe_cast(milestone.pse__target_date as date)  < cr.nextstartdate
+
+WHERE 
+   safe_cast(milestone.pse__target_date as date) BETWEEN '2021-01-01' AND '2025-07-31'
+  and safe_cast(project.pse__start_date as date) > '2021-01-01'
+   and lower(project.project_business_unit) = 'private'
+    and practice.namex  not in  ('Private Cloud Micro PS','SAP','ORACLE')
+
+   
+    and milestone.isdeleted = 'false'
+    AND project.isdeleted = 'false'
+    --and project.pse__project_id = 'PR-022967'
+    --and SUBSTR(milestone.id, 1, LENGTH(milestone.id) - 3) = 'a5yPe000003u8h8'
+
+   -- Limit 10

@@ -1,0 +1,72 @@
+config { type: "view" }
+
+
+SELECT 
+  proj.pse__project_id AS `Project: Project ID`,
+  proj.namex AS `Project: Project Name`,
+  res.namex AS `Resource Request: Resource Request Id`,
+  res.pse__resource AS `Suggested Resource`,
+  proj.opportunity_probability AS `Project: Opportunity Probability`,
+  res.pse__resource_role AS `Resource Role`,
+  res.pse__notes AS `Comments`,
+  res.pse__information_for_prospective_candidates AS `Notes`,
+  quo.namex AS `Resource Request: Owner Name`,
+  proj.opportunity_stage AS `Project: Opportunity Stage`,
+  res.pse__status AS `Status`,
+  r.namex AS `Project: Region`,
+  res.pse__sow_hours AS `Requested Hours`,
+  res.pse__start_date AS `Start Date`,
+  res.pse__end_date AS `End Date`,
+  res.pse__resource AS `Resource`,
+  proj.project_business_unit AS `Project: Project Business Unit`,
+  proj.pse__end_date AS `Project: End Date`,
+  proj.pse__start_date AS `Project: Start Date`,
+  proj.pse__stage AS `Project: Stage`,
+  proj.pse__project_type AS `Project: Project Type`,
+  proj.pse__billing_type AS `Project: Billing Type`,
+  qc.namex AS `Project: Project Manager`,
+  proj.pse__group AS `Project: Group`,
+  r.namex AS `Region`,
+  proj.opportunity_close_date AS `Project: Opportunity Close Date`,
+  opp.namex AS `Project: Opportunity`,
+  res.id AS `Resource Request: ID`,
+  practice.namex AS `Project: Practice`,
+  res.createddate as `created date`,
+  opp.id as `opp id`
+FROM 
+  `rax-landing.salesforce_ods.qpse__resource_request` res
+JOIN 
+  `rax-landing.salesforce_ods.qpse__proj` proj
+ON 
+  res.pse__project = proj.id
+
+  left join rax-landing.salesforce_ods.quser as quo
+on lower(res.ownerid) = lower(quo.id)
+
+left join
+    `rax-landing.salesforce_ods.qpse__region` r
+ON res.pse__region = r.id
+
+left Join 
+    `rax-landing.salesforce_ods.qpse__practice` as practice
+ on
+proj.pse__practice = practice.id 
+
+
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qopportunity` AS opp
+ON 
+   (proj.pse__opportunity) = (opp.id)
+
+left join rax-landing.salesforce_ods.qcontact as qc
+on proj.pse__project_manager = qc.id
+
+left join rax-landing.salesforce_ods.qcontact as qc2
+on res.pse__resource = qc2.id
+where 1=1
+and
+ res.isdeleted = 'false'
+ AND proj.isdeleted = 'false'
+ and res.createddate  > '2022-01-01'
+  and lower(proj.project_business_unit) = 'private';
+  ---limit 100

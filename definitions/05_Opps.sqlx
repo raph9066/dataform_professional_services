@@ -1,0 +1,98 @@
+config { type: "view" }
+
+with qdatedconversionrate as (
+  select
+    distinct *
+  from
+    `rax-landing.salesforce_ods.qdatedconversionrate`
+  where
+    delete_flag = 'N'
+), final_query as
+(
+    SELECT
+        lbi__latticeaccountname AS `Company_Name`,
+        opp.namex AS Opportunity_Name,
+        quo.namex AS Opportunity_Owner,
+        opp.owner_role AS Owner_Role,
+        quo.region AS Region,
+        quo.sub_region AS Sub_Region,
+        stagename AS Stage,
+        concat("Q", right(fiscal,1), "-", left(fiscal,4)) as Fiscal_Period,
+        closedate AS Close_Date,
+        forecast_status AS Forecast_Status,
+        opp.createddate AS Created_Date,
+        category AS Category,
+        typex AS Type,
+        practice_area AS Practice_Area,
+        f.namex AS Focus_Area,
+        opportunity_id AS Opportunity_Num,
+        vertical AS Vertical,
+        opp.business_unit AS Business_Unit,
+        opp.id AS Opportunity_ID,
+        opp.currencyisocode as Currency_Code,
+        opp.expectedrevenue AS Expected_Revenue,
+        opp.expectedrevenue * Ifnull(1 / cr.conversionrate, 1)  AS Expected_Revenue_Converted,
+        support_unit AS Support_Unit,
+        opp.service_fees * Ifnull(1 / cr.conversionrate, 1)  AS ProServ_Fees_One_Time_TCV_Converted,
+        opp.amount * Ifnull(1 / cr.conversionrate, 1) AS Amount_Converted,
+        safe_cast(acv as numeric) * Ifnull(1 / cr.conversionrate, 1) AS ACV_Converted,
+        service_fees_mrr * Ifnull(1 / cr.conversionrate, 1) AS ProServ_Fees_MRR_Converted,
+        --dp_pro_serve_mrr AS ProServ_Fees_MRR_Converted,
+        dp_opportunity_amount * Ifnull(1 / cr.conversionrate, 1) AS Opportunity_Amount_MRR_Converted,
+        requested_products AS Requested_Products,
+        --focus_area_total AS Focus_Area_Total,
+        f.focus_area_total *  Ifnull(1 / cr.conversionrate, 1) AS Focus_Area_Total_Converted,
+        --focus_area_acv AS Focus_Area_ACV,
+        product_group AS Product_Group,
+        business_unit_assignment AS Business_Unit_Assignment
+    FROM 
+        `rax-landing.salesforce_ods.qopportunity` as opp
+        left join rax-landing.salesforce_ods.quser as quo
+on lower(opp.ownerid) = lower(quo.id) 
+  LEFT JOIN `rax-landing.salesforce_ods.qopp_focusarea` f
+  ON
+    opp.id = f.opportunity
+
+  LEFT JOIN qdatedconversionrate AS cr ON 1 = 1
+  AND cr.delete_flag = 'N'
+  AND cr.isocode = opp.currencyisocode
+  AND opp.closedate >= cr.startdate
+  AND opp.closedate  < cr.nextstartdate
+
+where
+  (
+  1=1
+  AND Opportunity_id in ('4419684','4486962','4472317') --5
+  AND opp.isdeleted = 'false'
+  AND f.isdeleted = 'false'
+  )
+  OR
+  (
+  1=1
+  AND opp.isdeleted = 'false'
+  AND f.isdeleted = 'false'
+  AND opp.typex = 'Professional Services' --1
+  AND 
+  (lower(opp.category) is null or lower(opp.category) in (
+    'account assumptions', 'amendment', 'bookings credit', 'cloud net revenue', 'migration', 'new footprint', 'new logo', 'poc', 'partial assignment and assumptions', 'recompete - upgrade', 'renewal', 'upgrade', ''
+  )) --2
+  AND lower(opp.test_opportunity) = 'false' --3
+  AND lower(opp.non_bookable_revenue) = 'false' --4
+  AND opp.closedate BETWEEN '2022-01-01' AND '2025-12-31'
+  
+  AND
+  (
+    --7
+    (
+      lower(opp.stagename) not in ('closed lost','close lost') --7
+    )
+    OR
+    --6,8 
+    (
+      lower(opp.stagename) in ('closed lost','close lost') --6
+      and opp.closedate >= date_sub(current_date(), INTERVAL 183 day) --8
+    )
+  )
+  )
+)
+select distinct * from final_query

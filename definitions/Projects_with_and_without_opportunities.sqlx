@@ -1,0 +1,71 @@
+config { type: "view" }
+
+SELECT 
+    proj.namex AS `PS Project: Project Name`,
+    proj.pse__project_id AS `Project ID`,
+    proj.pse__start_date AS `Start Date`,
+    proj.pse__stage AS `Stage`,
+    proj.pse__end_date AS `End Date`,
+    r.namex AS `Region`,
+    proj.pse__project_type AS `Project Type`,
+    proj.pse__project_status AS `Project Status`,
+    proj.pse__is_active AS `Active`,
+    proj.pse__group AS `Group`,---find
+    proj.pse__billing_type AS `Billing Type`,
+    quo.namex AS `Project: Owner Name`,
+    cont.namex as `Project Manager`,
+    proj.pse__bookings AS `Bookings_converted`,
+    proj.pse__billings AS `Billings_converted`,
+    proj.pse__billed AS `Billed_converted`,
+    proj.pse__margin AS `Margin_converted`,
+    proj.marginpercent AS `Margin %`,
+    proj.pse__planned_hours AS `Planned Hours`,
+    proj.pse__planned_hours AS `Hours Open`,
+    proj.project_business_unit AS `Project Business Unit`,
+    opp.id AS `Opportunity ID`,
+    opp.closedate AS `Opportunity Close Date`,
+    opp.stagename AS `Opportunity Stage`,
+    proj.id AS `PS Project: ID`,
+    opp.lbi__latticeaccountname AS `Company`,
+    opp.namex AS `Opportunity`,
+    proj.pse__total_costs AS `Total Costs_converted`,
+    proj.pse__total_costs AS `Total Costs`,
+    quo.namex AS `Opportunity Owner`,
+    proj.budget_status AS `Budget Status`,
+    proj.schedule_status AS `Schedule Status`,
+    proj.pse__schedule_status AS `PSR Schedule Status`,
+    proj.pse__scope_status AS `PSR Scope Status`,
+    proj.scope_status AS `Scope Status`,
+    proj.resource_status AS `Resource Status`,
+    proj.financial_status AS `Financial Status`,
+    proj.pse__project_status_notes AS `Project Status Notes`,
+    proj.status_report_week_ending AS `Status Report Week Ending`,
+    proj.project_status_last_modified AS `Project Status Last Modified`,
+     proj.support_unit as `Support Unit`,
+    practice.namex as `Practice`
+   
+FROM 
+    `rax-landing.salesforce_ods.qpse__proj` AS proj
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qopportunity` AS opp
+ON 
+    proj.pse__opportunity = opp.id
+left join
+    `rax-landing.salesforce_ods.qpse__region` r
+ON proj.pse__region = r.id
+
+left join `rax-landing.salesforce_ods.qcontact` as cont on proj.pse__project_manager = cont.id
+
+left join rax-landing.salesforce_ods.quser as quo
+on lower(opp.ownerid) = lower(quo.id)
+
+left Join 
+    `rax-landing.salesforce_ods.qpse__practice` as practice
+on
+proj.pse__practice = practice.id
+
+where opp.closedate > '2021-01-01'
+and proj.isdeleted = 'false'
+and proj.pse__stage in ('Planning','In Progress', 'On Hold', 'Pending Project Complete - Finalize Invoicing')
+and lower(proj.project_business_unit) = 'private'
+and practice.namex  not in  ('Private Cloud Micro PS','SAP','ORACLE')

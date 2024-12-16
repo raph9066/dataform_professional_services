@@ -1,0 +1,79 @@
+config {
+    type: "view"
+}
+
+with qdatedconversionrate as (
+  select
+    distinct *
+  from
+    `rax-landing.salesforce_ods.qdatedconversionrate`
+  where
+    delete_flag = 'N'
+), final_query as
+(
+    SELECT
+        lbi__latticeaccountname AS `Company_Name`,
+        opp.namex AS Opportunity_Name,
+        quo.namex AS Opportunity_Owner,
+        quo.region AS Region,
+        stagename AS Stage,
+        concat("Q", right(fiscal,1), "-", left(fiscal,4)) as Fiscal_Period,
+        fiscalquarter,
+        closedate AS Close_Date,
+        opp.lastmodifieddate AS Last_Stage_change_Date,
+        forecast_status AS Forecast_Status,
+        opp.createddate AS Created_Date,
+        category AS Category,
+        typex AS Type,
+        practice_area AS Practice_Area,
+        focus_area AS Focus_Area,
+        opportunity_id AS Opportunity_Num,
+        opp.business_unit AS Business_Unit,
+        opp.id AS Opportunity_ID,
+        opp.currencyisocode as Currency_Code,
+        opp.expectedrevenue AS Expected_Revenue,
+        opp.expectedrevenue * Ifnull(1 / cr.conversionrate, 1)  AS Expected_Revenue_Converted,
+        opp.service_fees * Ifnull(1 / cr.conversionrate, 1)  AS ProServ_Fees_One_Time_TCV_Converted,
+        opp.amount * Ifnull(1 / cr.conversionrate, 1) AS Amount_Converted,
+        safe_cast(acv as numeric) * Ifnull(1 / cr.conversionrate, 1) AS ACV_Converted,
+        service_fees_mrr * Ifnull(1 / cr.conversionrate, 1) AS ProServ_Fees_MRR_Converted,
+        --dp_pro_serve_mrr AS ProServ_Fees_MRR_Converted,
+        dp_opportunity_amount * Ifnull(1 / cr.conversionrate, 1) AS Opportunity_Amount_MRR_Converted,
+        --focus_area_total AS Focus_Area_Total,
+        --focus_area_acv AS Focus_Area_ACV,
+        qtm.namex as `Team Member Name`,
+        qtm.teammemberrole as `Team Member Role`
+
+    FROM 
+        `rax-landing.salesforce_ods.qopportunity` as opp
+        left join rax-landing.salesforce_ods.quser as quo
+on lower(opp.ownerid) = lower(quo.id) 
+  LEFT JOIN qdatedconversionrate AS cr ON 1 = 1
+  AND cr.delete_flag = 'N'
+  AND cr.isocode = opp.currencyisocode
+  AND opp.closedate >= cr.startdate
+  AND opp.closedate  < cr.nextstartdate
+
+  LEFT JOIN `rax-landing.salesforce_ods.qopportunityteammember` as qtm on opp.id = qtm.opportunityid
+
+where
+  (
+  1=1
+  AND lower(opp.test_opportunity) = 'false' --3
+ AND opp.isdeleted = 'false'
+ -- AND ((EXTRACT(QUARTER FROM closedate) = EXTRACT(QUARTER FROM CURRENT_DATE()) 
+   ---    AND EXTRACT(YEAR FROM closedate) = EXTRACT(YEAR FROM CURRENT_DATE()))
+  --- OR (EXTRACT(QUARTER FROM closedate) = MOD(EXTRACT(QUARTER FROM CURRENT_DATE()) + 1 - 1, 4) + 1 
+   ---    AND EXTRACT(YEAR FROM closedate) = CASE 
+      ---                                      WHEN EXTRACT(QUARTER FROM CURRENT_DATE()) = 4 THEN EXTRACT(YEAR FROM CURRENT_DATE()) + 1
+        --                                    ELSE EXTRACT(YEAR FROM CURRENT_DATE())
+         ---                                 END))
+  --AND lower(qtm.teammemberrole) like '%solution%'
+ and safe_cast(closedate as date) BETWEEN '2024-12-01' AND '2026-12-31'
+  
+  --AND LOWER(TRIM(opp.typex)) = 'dedicated/private cloud' --1
+  
+  
+   
+))
+select distinct * from final_query
