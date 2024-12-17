@@ -1,0 +1,12 @@
+config {
+  type: "table",
+  bigquery: {
+    partitionBy: "DATE(snapshot_date)"
+  }
+}
+
+SELECT 
+  *,
+  Date(CURRENT_DATE()) AS snapshot_date  -- Adds the current date as the snapshot date
+FROM 
+  ${ref("Projects_with_and_without_opportunities")}
