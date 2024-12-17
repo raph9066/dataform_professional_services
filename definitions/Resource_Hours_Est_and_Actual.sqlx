@@ -24,7 +24,6 @@ SELECT
     q.namex AS `Project: Opportunity`,
     qa.namex AS `Project: Account`,
     e.id AS `Est Vs Actuals: ID`,
-    practice.namex as `Project: Practice`,
     p.pse__group AS `Project: Group`--find
 
 FROM 
@@ -52,10 +51,7 @@ left join rax-landing.salesforce_ods.qpse__practice as pr
 on p.pse__practice = pr.id
 left join rax-landing.salesforce_ods.qopportunity as q
 on p.pse__opportunity = q.id
-left Join 
-    `rax-landing.salesforce_ods.qpse__practice` as practice
-on
-p.pse__practice = practice.id
+
 left join rax-landing.salesforce_ods.qaccount as qa
 on p.pse__account = qa.id
 
