@@ -68,5 +68,5 @@ and
  res.isdeleted = 'false'
  AND proj.isdeleted = 'false'
  and res.createddate  > '2022-01-01'
-  and lower(proj.project_business_unit) = 'private';
+  and lower(proj.project_business_unit) = 'private'
   ---limit 100
