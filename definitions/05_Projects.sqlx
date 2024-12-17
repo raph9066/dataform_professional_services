@@ -39,7 +39,7 @@ SELECT
     proj.pse__total_costs AS `Total Costs_converted`,
     proj.pse__total_costs AS `Total Costs`,
     quo.namex AS `Opportunity Owner`,
-    proj.budget_status_picklist AS `Budget Status`,
+    proj.budget_status_picklist AS `Budget Status Picklist`,
     proj.budget_status AS `Budget Status`,
     proj.schedule_status AS `Schedule Status`,
     proj.pse__schedule_status AS `PSR Schedule Status`,
