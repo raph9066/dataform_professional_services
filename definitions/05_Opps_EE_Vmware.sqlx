@@ -1,4 +1,7 @@
-config { type: "view" }
+config { 
+    type: "view",
+    tags: "daily"
+ }
 
 SELECT 
     opps.lbi__latticeaccountname AS `Company Name`,

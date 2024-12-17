@@ -1,4 +1,7 @@
-config { type: "view" }
+config { 
+    type: "view",
+    tags: "daily"
+ }
 
 SELECT 
     proj.namex AS `PS Project: Project Name`,

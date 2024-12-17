@@ -1,4 +1,7 @@
-config { type: "view" }
+config { 
+    type: "view",
+    tags: "daily"
+ }
 
 SELECT 
     milestone.pse__status AS `Status`,

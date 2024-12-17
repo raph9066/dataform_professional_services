@@ -1,4 +1,7 @@
-config { type: "view" }
+config { 
+    type: "view",
+    tags: "daily"
+ }
 
 with racker_rooster as (SELECT distinct	*
 

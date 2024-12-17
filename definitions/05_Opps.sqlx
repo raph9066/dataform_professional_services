@@ -1,4 +1,7 @@
-config { type: "view" }
+config { 
+    type: "view",
+    tags: "daily"
+ }
 
 with qdatedconversionrate as (
   select

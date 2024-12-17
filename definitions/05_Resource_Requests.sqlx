@@ -1,5 +1,7 @@
-config { type: "view" }
-
+config { 
+    type: "view",
+    tags: "daily"
+ }
 
 SELECT 
   proj.pse__project_id AS `Project: Project ID`,

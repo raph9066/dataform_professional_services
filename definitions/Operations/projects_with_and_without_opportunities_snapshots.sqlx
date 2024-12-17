@@ -1,5 +1,6 @@
 config {
   type: "table",
+  tags: "daily",
   bigquery: {
     partitionBy: "snapshot_date"
   },
