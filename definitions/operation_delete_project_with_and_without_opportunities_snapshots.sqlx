@@ -1,5 +1,0 @@
-delete 
-from rax-datascience.professional_services.projects_with_and_without_opportunities_snapshots 
-where snapshot_date < date_sub(current_date(),45 day)
-
---this is the operation
