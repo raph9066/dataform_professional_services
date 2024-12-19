@@ -62,7 +62,8 @@ SELECT
     proj.ffx_psr_week_ending_date AS `PSR Week Ending Date`,
     proj.ffx_psr_nextweek_ending_date AS `PSR Next Week Ending Date`,
     proj.psr_email_address AS `PSR Email Address`,
-    practice.namex as `Practice`
+    practice.namex as `Practice`,
+    proj.project_category as `Project Category`
 FROM 
     `rax-landing.salesforce_ods.qpse__proj` AS proj
 LEFT JOIN 
