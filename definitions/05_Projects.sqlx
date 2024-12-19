@@ -42,7 +42,7 @@ SELECT
     proj.pse__total_costs AS `Total Costs_converted`,
     proj.pse__total_costs AS `Total Costs`,
     quo.namex AS `Opportunity Owner`,
-    proj.budget_status_picklist AS `Budget Status Picklist`,
+    proj.budget_status_picklist AS `Budget Status`,
     proj.budget_status AS `Budget Status`,
     proj.schedule_status AS `Schedule Status`,
     proj.pse__schedule_status AS `PSR Schedule Status`,
@@ -61,7 +61,8 @@ SELECT
     proj.ffx_psr_currentweek_end_date AS `PSR Current Week Ending Date`,
     proj.ffx_psr_week_ending_date AS `PSR Week Ending Date`,
     proj.ffx_psr_nextweek_ending_date AS `PSR Next Week Ending Date`,
-    proj.psr_email_address AS `PSR Email Address`
+    proj.psr_email_address AS `PSR Email Address`,
+    practice.namex as `Practice`
 FROM 
     `rax-landing.salesforce_ods.qpse__proj` AS proj
 LEFT JOIN 
@@ -72,6 +73,12 @@ left join
     `rax-landing.salesforce_ods.qpse__region` r
 ON proj.pse__region = r.id
 
+
+left Join 
+    `rax-landing.salesforce_ods.qpse__practice` as practice
+on
+proj.pse__practice = practice.id
+
 left join `rax-landing.salesforce_ods.qcontact` as cont on proj.pse__project_manager = cont.id
 
 left JOIN `rax-landing.salesforce_ods.qrecordtype` as rt on proj.recordtypeid = rt.id  
@@ -81,3 +88,4 @@ on lower(opp.ownerid) = lower(quo.id)
 
 where opp.closedate > '2021-01-01'
 and proj.isdeleted = 'false'
+
