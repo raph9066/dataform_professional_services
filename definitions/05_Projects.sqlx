@@ -89,3 +89,4 @@ on lower(opp.ownerid) = lower(quo.id)
 where opp.closedate > '2021-01-01'
 and proj.isdeleted = 'false'
 
+
