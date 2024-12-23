@@ -3,7 +3,7 @@ config {
     tags: "daily"
  }
 
-SELECT 
+SELECT DISTINCT 
     opps.lbi__latticeaccountname AS `Company Name`,
     opps.namex AS `Opportunity Name`,
     quo.namex  AS `Opportunity Owner`,
@@ -20,7 +20,7 @@ SELECT
     opps.practice_area AS `Practice Area`,
     fa.namex AS `Focus Area: Focus Area`,
     fa.focus_area_total AS `Focus Area: Focus Area Total converted`,
-    opps.opportunity_id AS `Opportunity Num`,
+    opps.opportunity_id AS `Opportunity Num`, 
     opps.vertical AS `Vertical`,
     opps.business_unit AS `Business Unit`,
     opps.id AS `Opportunity ID`,
@@ -37,16 +37,14 @@ LEFT JOIN
 LEFT JOIN 
     `rax-landing.salesforce_ods.qquote_line` AS quote_line
     ON opps.id = quote_line.opportunity_quote
-
-    left join rax-landing.salesforce_ods.quser as quo
-on lower(opps.ownerid) = lower(quo.id) 
-
-where
-    lower(quote_line.namex) in ('rackspace elastic engineering for vmware','rackspace elastic engineering for private cloud')
-    and (opps.category) not in ('Recompete - Downgrade','Recompete - Upgrade')
-    and (opps.forecastcategoryname) not in ('Omitted')
-    AND lower(opps.test_opportunity) = 'false' 
-  AND lower(opps.non_bookable_revenue) = 'false'
+LEFT JOIN 
+    `rax-landing.salesforce_ods.quser` AS quo
+    ON LOWER(opps.ownerid) = LOWER(quo.id) 
+WHERE
+    LOWER(quote_line.namex) IN ('rackspace elastic engineering for vmware', 'rackspace elastic engineering for private cloud')
+    AND opps.category NOT IN ('Recompete - Downgrade', 'Recompete - Upgrade')
+    AND opps.forecastcategoryname NOT IN ('Omitted')
+    AND LOWER(opps.test_opportunity) = 'false' 
+    AND LOWER(opps.non_bookable_revenue) = 'false'
     AND opps.isdeleted = 'false'
     AND opps.closedate BETWEEN '2022-01-01' AND '2025-12-31'
-  
