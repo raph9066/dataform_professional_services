@@ -25,6 +25,12 @@ SELECT
     project.project_business_unit AS `Project: Project Business Unit`,
     SUBSTR(milestone.id, 1, LENGTH(milestone.id) - 3) AS`Milestone: ID`,
     practice.namex as `Practice`,
+    CASE 
+    WHEN milestone.recordtypeid = '0123f000000XdTmAAK' THEN 'Deliverable Milestone'
+    WHEN milestone.recordtypeid = '0123f000000XdTnAAK' THEN 'Fixed Fee Milestone'
+    ELSE 'Other'
+END AS `Milestone: Record Type`
+
 
 FROM 
     `rax-landing.salesforce_ods.qpse__milestone` AS milestone
