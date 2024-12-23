@@ -11,7 +11,7 @@ SELECT DISTINCT
     opps.region AS `Region`,
     opps.sub_service AS `Sub Region`,
     opps.stagename AS `Stage`,
-    opps.fiscal AS `Fiscal Period`,
+    concat("Q", right(fiscal,1), "-", left(fiscal,4)) as `Fiscal Period`,
     opps.closedate AS `Close Date`,
     opps.forecastcategoryname AS `Forecast Status`,
     opps.createddate AS `Created Date`,
