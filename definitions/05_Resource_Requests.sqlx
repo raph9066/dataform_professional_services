@@ -7,7 +7,7 @@ SELECT
   proj.pse__project_id AS `Project: Project ID`,
   proj.namex AS `Project: Project Name`,
   res.namex AS `Resource Request: Resource Request Id`,
-  res.pse__resource AS `Suggested Resource`,
+  qc2.namex AS `Suggested Resource`,
   proj.opportunity_probability AS `Project: Opportunity Probability`,
   res.pse__resource_role AS `Resource Role`,
   res.pse__notes AS `Comments`,
@@ -19,7 +19,7 @@ SELECT
   res.pse__sow_hours AS `Requested Hours`,
   res.pse__start_date AS `Start Date`,
   res.pse__end_date AS `End Date`,
-  res.pse__resource AS `Resource`,
+  qc3.namex AS `Resource`,
   proj.project_business_unit AS `Project: Project Business Unit`,
   proj.pse__end_date AS `Project: End Date`,
   proj.pse__start_date AS `Project: Start Date`,
@@ -65,10 +65,13 @@ on proj.pse__project_manager = qc.id
 
 left join rax-landing.salesforce_ods.qcontact as qc2
 on res.pse__resource = qc2.id
+
+left join rax-landing.salesforce_ods.qcontact as qc3
+on res.pse__staffer_resource = qc3.id
 where 1=1
 and
  res.isdeleted = 'false'
  AND proj.isdeleted = 'false'
  and res.createddate  > '2022-01-01'
   and lower(proj.project_business_unit) = 'private'
-  ---limit 100
+ 
