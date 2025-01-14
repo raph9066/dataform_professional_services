@@ -52,9 +52,9 @@ on lower(opp.ownerid) = lower(quo.id)
   LEFT JOIN qdatedconversionrate AS cr ON 1 = 1
   AND cr.delete_flag = 'N'
   AND cr.isocode = opp.currencyisocode
-  AND opp.closedate >= cr.startdate
-  AND opp.closedate  < cr.nextstartdate
-
+  --AND opp.closedate >= cr.startdate
+  ---AND opp.closedate  < cr.nextstartdate
+AND cr.nextstartdate > '3000-01-01'
   LEFT JOIN `rax-landing.salesforce_ods.qopportunityteammember` as qtm on opp.id = qtm.opportunityid
 
 where
