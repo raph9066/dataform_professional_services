@@ -52,8 +52,10 @@ on lower(project.pse__opportunity_owner) = lower(quo.id)
  LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
   AND cr.delete_flag = 'N'
   AND cr.isocode = milestone.currencyisocode
-  AND safe_cast(milestone.pse__target_date as date) >= cr.startdate
-  AND safe_cast(milestone.pse__target_date as date)  < cr.nextstartdate
+  --AND safe_cast(milestone.pse__target_date as date) >= cr.startdate
+  --AND safe_cast(milestone.pse__target_date as date)  < cr.nextstartdate
+  AND cr.nextstartdate > '3000-01-01'
+
 
 WHERE 
    safe_cast(milestone.pse__target_date as date) BETWEEN '2021-01-01' AND '2025-07-31'
@@ -64,7 +66,3 @@ WHERE
    
     and milestone.isdeleted = 'false'
     AND project.isdeleted = 'false'
-    --and project.pse__project_id = 'PR-022967'
-    --and SUBSTR(milestone.id, 1, LENGTH(milestone.id) - 3) = 'a5yPe000003u8h8'
-
-   -- Limit 10
