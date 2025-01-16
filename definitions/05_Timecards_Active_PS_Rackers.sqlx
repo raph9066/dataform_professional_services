@@ -48,7 +48,7 @@ final_query as
   qc2.namex AS Resource_Manager,  
   qc.pse__resource_role AS Resource_Role,       
   tc.pse__end_date AS End_Date,
-  ----(tc.pse__total_billable_amount * tc.pse__project_exchange_rate) AS Total_Billable_Amount_Converted
+ safe_cast(tc.pse__total_billable_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS Total_Billable_Amount_Converted
 FROM 
   `rax-landing.salesforce_ods.qpse__timecard` tc
 left join `rax-landing.salesforce_ods.qpse__timecard_header` th
@@ -69,17 +69,26 @@ on tc.pse__resource = qc.id
 
 left join rax-landing.salesforce_ods.qcontact as qc2
 on qc.reportstoid = qc2.id
+ LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
+  AND cr.delete_flag = 'N'
+  AND cr.isocode = tc.currencyisocode
+  AND cr.nextstartdate > '3000-01-01'
+
 left join  racker_rooster on lower(qc.email) = lower(racker_rooster.work_email)
 where 1=1
+
 and lower(qc.email) = lower(racker_rooster.work_email)
+
 ---and Project.namex  = 'SDAIA_P-Cloud Project - Phase 2 : PSO-14564'
 and safe_cast(tc.pse__total_hours as numeric) > 0
 --and qc.namex = 'Karol Zimonczyk'
 ---and racker_rooster.work_email is null
+---and racker_rooster.sso ='jaku4994'
 and tc.pse__end_date >= '2023-12-31'
 and safe_cast(th.isdeleted as bool) = FALSE
 and safe_cast(tc.isdeleted as bool) = FALSE
 AND safe_cast(td.isdeleted as bool) = FALSE
+
 )
 select * from final_query
 where Hour > 0
