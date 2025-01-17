@@ -94,8 +94,8 @@ and safe_cast(th.isdeleted as bool) = FALSE
 and safe_cast(tc.isdeleted as bool) = FALSE
 AND safe_cast(td.isdeleted as bool) = FALSE
 
-and tc.id ='a7G8Z000000VzNZUA0'
+----and tc.id ='a7G8Z000000VzNZUA0'
 
 )
-select *, Hour*Bill_Rate_Converted as Billable_amount from final_query
+select *, Hour*Bill_Rate_Converted as Billable_Amount from final_query
 where Hour > 0
