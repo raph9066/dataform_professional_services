@@ -7,10 +7,14 @@ with racker_rooster as (SELECT distinct	*
 
  FROM `rax-landing.workday_ods.racker_roster` 
 WHERE  
-cost_center_id in ('5727', '5209','5023','5535','5430') and
-management_chain_level_03 in ('Stacey Portat','Sameer Relan')
- ---and report_effective_date = current_date()
+cost_center_id in ('5727', '5209','5023','5535','5430') 
+
+and management_chain_level_03 in ('Stacey Portat','Marc Hadler')
+--and management_chain_level_04 in ('Sameer Relan')
+ --and report_effective_date = current_date()
  and workers_manager not in ('Srini Koushik','Jake Thielen') 
+ --and preferred_name = 'Aakriti Jain'
+ 
  and hire_date <= current_date()
  and report_effective_date=  (SELECT MAX(report_effective_date) FROM `rax-landing.workday_ods.racker_roster` )
  ) ,
@@ -39,7 +43,7 @@ final_query as
   END AS Hour,
 
   --tc.pse__total_hours AS Hours,
-  tc.pse__total_billable_amount AS Billable_Amount,
+  ---tc.pse__total_billable_amount AS Total_Billable_Amount_Converted,
   tc.pse__timecard_notes AS Daily_Notes,
   tc.pse__external_resource AS External_Resource,
   tc.pse__status AS Status,
@@ -48,7 +52,8 @@ final_query as
   qc2.namex AS Resource_Manager,  
   qc.pse__resource_role AS Resource_Role,       
   tc.pse__end_date AS End_Date,
- safe_cast(tc.pse__total_billable_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS Total_Billable_Amount_Converted
+ safe_cast(tc.pse__total_billable_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS Total_Billable_Amount_Converted,
+ safe_cast(th.pse__bill_rate as numeric) * Ifnull(1 / cr.conversionrate, 1) as Bill_Rate_Converted
 FROM 
   `rax-landing.salesforce_ods.qpse__timecard` tc
 left join `rax-landing.salesforce_ods.qpse__timecard_header` th
@@ -89,6 +94,8 @@ and safe_cast(th.isdeleted as bool) = FALSE
 and safe_cast(tc.isdeleted as bool) = FALSE
 AND safe_cast(td.isdeleted as bool) = FALSE
 
+and tc.id ='a7G8Z000000VzNZUA0'
+
 )
-select * from final_query
+select *, Hour*Bill_Rate_Converted as Billable_amount_converted from final_query
 where Hour > 0
