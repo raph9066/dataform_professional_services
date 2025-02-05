@@ -1,0 +1,19 @@
+config { 
+    type: "view",
+    tags: "daily"
+ }
+
+
+
+SELECT * 
+
+FROM `rax-datascience.supply_chain.stg_core_device` 
+
+where 1=1
+
+--and account_number = '5864425'
+
+and device_active_status = 'active'
+
+and account_sub_type <> 'Internal'
+ 
