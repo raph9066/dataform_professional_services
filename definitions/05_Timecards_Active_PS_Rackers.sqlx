@@ -3,20 +3,32 @@ config {
     tags: "daily"
  }
 
-with racker_rooster as (SELECT distinct	*
-
- FROM `rax-landing.workday_ods.racker_roster` 
+with racker_rooster as (SELECT DISTINCT *
+FROM `rax-landing.workday_ods.racker_roster`
 WHERE  
-cost_center_id in ('5727', '5209','5023','5535','5430') 
+  cost_center_id IN ('5727', '5209', '5023', '5535', '5430', '5740')
+  AND management_chain_level_03 IN ('Stacey Portat', 'Marc Hadler')
+  AND workers_manager NOT IN ('Srini Koushik', 'Jake Thielen') 
+  AND hire_date <= CURRENT_DATE()
+  AND report_effective_date = (
+      SELECT MAX(report_effective_date) 
+      FROM `rax-landing.workday_ods.racker_roster`
+  )
+  --AND cost_center_id != 5711  -- Exclude Paul Cocks' cost center
+  
 
-and management_chain_level_03 in ('Stacey Portat','Marc Hadler')
---and management_chain_level_04 in ('Sameer Relan')
- --and report_effective_date = current_date()
- and workers_manager not in ('Srini Koushik','Jake Thielen') 
- --and preferred_name = 'Aakriti Jain'
- 
- and hire_date <= current_date()
- and report_effective_date=  (SELECT MAX(report_effective_date) FROM `rax-landing.workday_ods.racker_roster` )
+UNION ALL
+
+-- Query to specifically include Paul Cocks
+SELECT DISTINCT *
+FROM `rax-landing.workday_ods.racker_roster`
+WHERE  
+  preferred_name = 'Paul Cocks'
+  AND hire_date <= CURRENT_DATE()
+  AND report_effective_date = (
+      SELECT MAX(report_effective_date) 
+      FROM `rax-landing.workday_ods.racker_roster`
+  )
  ) ,
 
 final_query as
