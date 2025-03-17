@@ -47,4 +47,4 @@ WHERE
     AND LOWER(opps.test_opportunity) = 'false' 
     AND LOWER(opps.non_bookable_revenue) = 'false'
     AND opps.isdeleted = 'false'
-    AND opps.closedate BETWEEN '2022-01-01' AND '2025-12-31'
+    AND opps.closedate BETWEEN '2022-01-01' AND '2023-12-31'
