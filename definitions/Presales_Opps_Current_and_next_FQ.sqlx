@@ -70,7 +70,7 @@ where
         --                                    ELSE EXTRACT(YEAR FROM CURRENT_DATE())
          ---                                 END))
   --AND lower(qtm.teammemberrole) like '%solution%'
- and safe_cast(closedate as date) BETWEEN '2024-12-01' AND '2026-12-31'
+ and safe_cast(closedate as date) > '2024-12-01'
   
   --AND LOWER(TRIM(opp.typex)) = 'dedicated/private cloud' --1
   
