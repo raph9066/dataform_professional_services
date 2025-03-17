@@ -58,7 +58,7 @@ on lower(project.pse__opportunity_owner) = lower(quo.id)
 
 
 WHERE 
-   safe_cast(milestone.pse__target_date as date) BETWEEN '2021-01-01' AND '2025-07-31'
+   safe_cast(milestone.pse__target_date as date)  > '2021-01-01' 
   and safe_cast(project.pse__start_date as date) > '2021-01-01'
    and lower(project.project_business_unit) = 'private'
     and practice.namex  not in  ('Private Cloud Micro PS','SAP','ORACLE')
