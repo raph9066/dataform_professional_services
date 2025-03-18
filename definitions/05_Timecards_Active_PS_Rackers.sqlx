@@ -29,7 +29,19 @@ WHERE
       SELECT MAX(report_effective_date) 
       FROM `rax-landing.workday_ods.racker_roster`
   )
- ) ,
+ ) 
+ ,
+ fixed_qcontact AS (
+  SELECT * EXCEPT(email),
+    CASE 
+      WHEN namex = 'Sajid Hussain' AND email = "00000@rackspace.com" THEN "sajid.hussain@rackspace.com"
+      WHEN email = "hatemahmed.mostafa@rackspace.com" THEN "hatem.mostafa@rackspace.com"  
+      WHEN email = "kiranahamedmusthak.ali@rackspace.com" THEN "Kiran.ahamed@rackspace.com"
+      ELSE email 
+    END AS email 
+  FROM `rax-landing.salesforce_ods.qcontact`
+  WHERE delete_flag = "N"
+),
 
 final_query as
 (
@@ -81,10 +93,10 @@ ON
    left join `rax-landing.salesforce_ods.qpse__assignment` as a
 on tc.pse__assignment = a.id
 
-left join rax-landing.salesforce_ods.qcontact as qc
+left join fixed_qcontact as qc
 on tc.pse__resource = qc.id
 
-left join rax-landing.salesforce_ods.qcontact as qc2
+left join fixed_qcontact as qc2
 on qc.reportstoid = qc2.id
  LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
   AND cr.delete_flag = 'N'
@@ -98,7 +110,7 @@ and lower(qc.email) = lower(racker_rooster.work_email)
 
 ---and Project.namex  = 'SDAIA_P-Cloud Project - Phase 2 : PSO-14564'
 and safe_cast(tc.pse__total_hours as numeric) > 0
---and qc.namex = 'Karol Zimonczyk'
+----and qc.namex = 'Sajid Hussain'
 ---and racker_rooster.work_email is null
 ---and racker_rooster.sso ='jaku4994'
 and tc.pse__end_date >= '2023-12-31'
