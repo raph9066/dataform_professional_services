@@ -81,7 +81,7 @@ where
   )) --2
   AND lower(opp.test_opportunity) = 'false' --3
   AND lower(opp.non_bookable_revenue) = 'false' --4
-  AND opp.closedate BETWEEN '2022-01-01' AND '2052-12-31'
+  AND opp.closedate BETWEEN '2023-01-01' AND '2052-12-31'
   
   AND
   (
