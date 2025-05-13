@@ -10,7 +10,7 @@ SELECT
   qc2.namex AS `Suggested Resource`,
   proj.opportunity_probability AS `Project: Opportunity Probability`,
   res.pse__resource_role AS `Resource Role`,
-  --res.comments AS `Comments`,
+  res.comments AS `Comments`,
   res.pse__notes AS `Notes`,
   quo.namex AS `Resource Request: Owner Name`,
   proj.opportunity_stage AS `Project: Opportunity Stage`,
