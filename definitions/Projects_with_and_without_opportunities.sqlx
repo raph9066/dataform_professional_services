@@ -16,11 +16,11 @@ SELECT
     proj.pse__group AS `Group`,---find
     proj.pse__billing_type AS `Billing Type`,
     quo.namex AS `Project: Owner Name`,
-    cont.namex as `Project Manager`,
-    proj.pse__bookings AS `Bookings_converted`,
-    proj.pse__billings AS `Billings_converted`,
-    proj.pse__billed AS `Billed_converted`,
-    proj.pse__margin AS `Margin_converted`,
+    cont.namex as `Project Manager`,    
+    safe_cast(proj.pse__bookings as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Bookings_converted`,
+    safe_cast(proj.pse__billings as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Billings_converted`,
+    safe_cast(proj.pse__billed as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Billed_converted`,
+    safe_cast(proj.pse__margin as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Margin_converted`,
     proj.marginpercent AS `Margin %`,
     proj.pse__planned_hours AS `Planned Hours`,
     proj.pse__planned_hours AS `Hours Open`,
@@ -67,9 +67,13 @@ left Join
 on
 proj.pse__practice = practice.id
 
+ LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
+  AND cr.delete_flag = 'N'
+  AND cr.isocode = proj.currencyisocode
+  AND cr.nextstartdate > '3000-01-01'
+
 where
 proj.isdeleted = 'false'
 and proj.pse__stage in ('Planning','In Progress', 'On Hold', 'Pending Project Complete - Finalize Invoicing')
 and lower(proj.project_business_unit) = 'private'
 and practice.namex  not in  ('Private Cloud Micro PS','SAP','ORACLE')
-
