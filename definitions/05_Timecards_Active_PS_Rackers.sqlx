@@ -74,8 +74,8 @@ final_query as
   tc.pse__billable AS Billable,
   tc.pse__exclude_from_billing AS Exclude_from_Billing,
   qc2.namex AS Resource_Manager,  
-  qc.pse__resource_role AS Resource_Role,       
-  tc.pse__end_date AS End_Date,
+  qc.pse__resource_role AS Resource_Role, 
+  cast(tc.pse__end_date as date) AS End_Date,      
  safe_cast(tc.pse__total_billable_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS Total_Billable_Amount_Converted,
  safe_cast(th.pse__bill_rate as numeric) * Ifnull(1 / cr.conversionrate, 1) as Bill_Rate_Converted
 FROM 
@@ -121,5 +121,19 @@ AND safe_cast(td.isdeleted as bool) = FALSE
 ----and tc.id ='a7G8Z000000VzNZUA0'
 
 )
-select *, Hour*Bill_Rate_Converted as Billable_Amount from final_query
+select *, Hour*Bill_Rate_Converted as Billable_Amount,
+EXTRACT(DAYOFWEEK FROM End_Date) AS day_of_week_num,
+-- Get the following Saturday
+DATE_ADD(End_Date, INTERVAL 
+  CASE EXTRACT(DAYOFWEEK FROM End_Date)
+    WHEN 1 THEN 6  -- Sunday: add 6 days
+    WHEN 2 THEN 5  -- Monday: add 5 days  
+    WHEN 3 THEN 4  -- Tuesday: add 4 days
+    WHEN 4 THEN 3  -- Wednesday: add 3 days
+    WHEN 5 THEN 2  -- Thursday: add 2 days
+    WHEN 6 THEN 1  -- Friday: add 1 day
+    WHEN 7 THEN 0  -- Saturday: add 7 days (next Saturday)
+  END DAY) AS End_Date_Mod
+from final_query
+
 where Hour > 0
