@@ -6,7 +6,7 @@ config {
 with racker_rooster as (SELECT DISTINCT *
 FROM `rax-landing.workday_ods.racker_roster`
 WHERE  
-  cost_center_id IN ('5727', '5209', '5023', '5535', '5430', '5740','6708')
+  cost_center_id IN ('5727', '5209', '5023', '5535', '5430', '5740','6708','5711')
   AND management_chain_level_03 IN ('Stacey Portat', 'Marc Hadler')
   AND workers_manager NOT IN ('Srini Koushik', 'Jake Thielen') 
   AND hire_date <= CURRENT_DATE()
