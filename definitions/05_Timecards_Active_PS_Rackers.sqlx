@@ -77,7 +77,8 @@ final_query as
   qc.pse__resource_role AS Resource_Role, 
   cast(tc.pse__end_date as date) AS End_Date,      
  safe_cast(tc.pse__total_billable_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS Total_Billable_Amount_Converted,
- safe_cast(th.pse__bill_rate as numeric) * Ifnull(1 / cr.conversionrate, 1) as Bill_Rate_Converted
+ safe_cast(th.pse__bill_rate as numeric) * Ifnull(1 / cr.conversionrate, 1) as Bill_Rate_Converted,
+  m.namex AS Milestone
 FROM 
   `rax-landing.salesforce_ods.qpse__timecard` tc
 left join `rax-landing.salesforce_ods.qpse__timecard_header` th
@@ -92,6 +93,9 @@ ON
 
    left join `rax-landing.salesforce_ods.qpse__assignment` as a
 on tc.pse__assignment = a.id
+
+left join `rax-landing.salesforce_ods.qpse__milestone` as m
+on tc.pse__milestone = m.id
 
 left join fixed_qcontact as qc
 on tc.pse__resource = qc.id
