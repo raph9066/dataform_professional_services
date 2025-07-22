@@ -6,6 +6,7 @@ config {
 SELECT 
     milestone.pse__status AS `Status`,
     project.pse__project_id AS `Project: Project ID`,
+    project.pse__start_date AS `Project: Start Date`,
     milestone.namex AS `Milestone: Milestone Name`,
     project.pse__billing_type AS `Project: Billing Type`,
     safe_cast(milestone.pse__milestone_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Milestone Amount_converted`,
