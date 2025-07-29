@@ -20,7 +20,7 @@ SELECT
     rt.namex AS `PS Project: Record Type`,
     opp.business_unit AS `Opportunity: Business Unit`,
     cont.namex as `Project Manager`,
-    proj.pse__bookings AS `Bookings_converted`,
+    safe_cast(proj.pse__bookings as numeric) * Ifnull(1 / cr.conversionrate, 1) AS `Bookings_converted`,
     proj.pse__billings AS `Billings_converted`,
     proj.pse__billed AS `Billed_converted`,
     proj.pse__margin AS `Margin_converted`,
@@ -86,6 +86,11 @@ left JOIN `rax-landing.salesforce_ods.qrecordtype` as rt on proj.recordtypeid = 
 
 left join rax-landing.salesforce_ods.quser as quo
 on lower(opp.ownerid) = lower(quo.id)
+
+ LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
+  AND cr.delete_flag = 'N'
+  AND cr.isocode = proj.currencyisocode
+  AND cr.nextstartdate > '3000-01-01'
 
 where opp.closedate > '2021-01-01'
 and proj.isdeleted = 'false'
