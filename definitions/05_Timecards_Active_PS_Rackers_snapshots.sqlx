@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  tags: "weekly",
+  bigquery: {
+    partitionBy: "snapshot_date"
+  },
+}
+
+SELECT 
+  *,
+  Date(CURRENT_DATE()) AS snapshot_date  -- Adds the current date as the snapshot date
+FROM 
+  ${ref("05_Timecards_Active_PS_Rackers")}
