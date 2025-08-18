@@ -66,7 +66,7 @@ on qc.reportstoid = qc2.id
 
 where 1=1
 and lower(e.pse__time_period_type) = 'week'
-and lower(p.project_business_unit) = 'private'
+and lower(p.project_business_unit)  in ('private','public')
 and   e.isdeleted = 'false'
 and   p.isdeleted = 'false'
 and   a.isdeleted = 'false'
