@@ -48,6 +48,7 @@ final_query as
   SELECT 
   Project.pse__project_id  AS Project,
   Project.namex AS `PS Project: Project Name`,
+  Project.pse__project_id AS `Project ID`,
   a.namex AS Assignment,
   qc.namex AS Resource,
   
