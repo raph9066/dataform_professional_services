@@ -61,7 +61,7 @@ left join rax-landing.salesforce_ods.qcontact as qc
 on e.pse__resource = qc.id
 
 left join rax-landing.salesforce_ods.qcontact as qc2
-on qc.reportstoid = qc2.id
+on p.pse__project_manager = qc2.id
 
 
 where 1=1
