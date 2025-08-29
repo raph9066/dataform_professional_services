@@ -78,7 +78,8 @@ final_query as
   cast(tc.pse__end_date as date) AS End_Date,      
  safe_cast(tc.pse__total_billable_amount as numeric) * Ifnull(1 / cr.conversionrate, 1) AS Total_Billable_Amount_Converted,
  safe_cast(th.pse__bill_rate as numeric) * Ifnull(1 / cr.conversionrate, 1) as Bill_Rate_Converted,
-  m.namex AS Milestone
+  m.namex AS Milestone,
+  qc3.namex AS Project_Manager
 FROM 
   `rax-landing.salesforce_ods.qpse__timecard` tc
 left join `rax-landing.salesforce_ods.qpse__timecard_header` th
@@ -102,6 +103,10 @@ on tc.pse__resource = qc.id
 
 left join fixed_qcontact as qc2
 on qc.reportstoid = qc2.id
+
+left join fixed_qcontact as qc3
+on project.pse__project_manager  = qc3.id
+
  LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
   AND cr.delete_flag = 'N'
   AND cr.isocode = tc.currencyisocode
