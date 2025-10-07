@@ -10,10 +10,13 @@ WHERE
   AND management_chain_level_03 IN ('Stacey Portat', 'Marc Hadler')
   AND workers_manager NOT IN ('Srini Koushik', 'Jake Thielen') 
   AND hire_date <= CURRENT_DATE()
-  AND report_effective_date = (
-      SELECT MAX(report_effective_date) 
-      FROM `rax-landing.workday_ods.racker_roster`
-  )
+  AND report_effective_date =  date('2025-10-04')
+  
+-----(
+     ----- SELECT MAX(report_effective_date) 
+ -----    FROM `rax-landing.workday_ods.racker_roster`
+  ----)
+  
   --AND cost_center_id != 5711  -- Exclude Paul Cocks' cost center
   
 
@@ -25,10 +28,12 @@ FROM `rax-landing.workday_ods.racker_roster`
 WHERE  
   preferred_name = 'Paul Cocks'
   AND hire_date <= CURRENT_DATE()
-  AND report_effective_date = (
-      SELECT MAX(report_effective_date) 
-      FROM `rax-landing.workday_ods.racker_roster`
-  )
+  AND report_effective_date =  date('2025-10-04')
+  
+-----(
+     ----- SELECT MAX(report_effective_date) 
+ -----    FROM `rax-landing.workday_ods.racker_roster`
+  ----)
  ) 
  ,
  fixed_qcontact AS (
