@@ -89,8 +89,8 @@ WHERE
   AND opp.support_unit IN ('Private Cloud PS','PVC MicroPS','Private Cloud PS EE','PVC DBA')
   AND SAFE_CAST(project.pse__start_date AS DATE) > '2022-12-31'
   AND LOWER(project.project_business_unit) = 'private'
-  AND opp.namex NOT IN ('dummy', 'cancelled')
-  AND project.namex NOT IN ('CANCELLED', 'Incorrect currency', 'TO be CANCELLED', 'INCORRECT CURRENCY', 'Cancelled')
+  AND NOT REGEXP_CONTAINS(LOWER(opp.namex), r'(dummy|cancelled)')
+  AND NOT REGEXP_CONTAINS(LOWER(project.namex), r'(cancelled|incorrect currency|to be cancelled)')
   AND practice.namex NOT IN ('SAP', 'ORACLE')
   AND milestone.pse__status NOT IN ('Cancelled')
   AND milestone.namex NOT IN ('debook','de-book','de book','debooked')
@@ -98,4 +98,4 @@ WHERE
   AND project.isdeleted = 'false'
 
 ORDER BY 
-  Opportunity_Num;
+  Opportunity_Num
