@@ -1,0 +1,96 @@
+SELECT 
+  opp.opportunity_id AS Opportunity_Num,
+  opp.namex AS Opportunity_Name,
+  opp.forecast_status AS Forecast_Status,
+  opp.stagename AS Opp_Stage,
+  SAFE_CAST(opp.closedate AS DATE) AS Close_Date,
+  opp.support_unit AS Support_Unit,
+
+  SAFE_CAST(opp.acv AS NUMERIC) * IFNULL(1 / cr.conversionrate, 1) AS ACV_Converted,
+
+  project.pse__project_id AS `Project: Project ID`,
+  project.namex AS `Project: Project Name`,
+  project.pse__stage AS `Project: Stage`,
+  SAFE_CAST(project.pse__start_date AS DATE) AS `Project: Start Date`,
+  SAFE_CAST(project.pse__end_date AS DATE) AS `Project: End Date`,
+  project.pse__project_status AS `Project: Project Status`,
+
+  SAFE_CAST(project.pse__bookings AS NUMERIC) * IFNULL(1 / cr.conversionrate, 1) AS Bookings_converted,
+
+  opp.lbi__latticeaccountname AS `Account: Company Name`,
+  quo.region AS Region,
+
+  SUBSTR(milestone.id, 1, LENGTH(milestone.id) - 3) AS `Milestone: ID`,
+  milestone.namex AS `Milestone: Milestone Name`,
+  milestone.pse__exclude_from_billing AS `Exclude from Billing`,
+  milestone.pse__status AS `Milestone Status`,
+
+  SAFE_CAST(milestone.pse__target_date AS DATE) AS `Target Date`,
+  SAFE_CAST(milestone.pse__actual_date AS DATE) AS `Actual Date`,
+
+  SAFE_CAST(milestone.pse__milestone_amount AS NUMERIC) * IFNULL(1 / cr.conversionrate, 1) AS Milestone_Amount_converted,
+  SAFE_CAST(milestone.pse__milestone_amount AS NUMERIC) AS `Milestone Amount`,
+  milestone.currencyisocode AS `Milestone: Currency`,
+
+  project.pse__billing_type AS `Project: Billing Type`,
+  milestone.pse__milestone_cost AS `Milestone Cost`,
+  SAFE_CAST(milestone.pse__milestone_cost AS NUMERIC) * IFNULL(1 / cr.conversionrate, 1) AS Milestone_Cost_converted,
+
+  milestone.pse__vendor_account AS `Vendor Account`
+
+FROM 
+  `rax-landing.salesforce_ods.qpse__milestone` AS milestone
+JOIN 
+  `rax-landing.salesforce_ods.qpse__proj` AS project
+    ON milestone.pse__project = project.id
+
+LEFT JOIN `rax-landing.salesforce_ods.qpse__practice` AS practice
+  ON project.pse__practice = practice.id
+
+LEFT JOIN `rax-landing.salesforce_ods.qpse__region` AS r
+  ON project.pse__region = r.id
+
+LEFT JOIN `rax-landing.salesforce_ods.qcontact` AS cont
+  ON project.pse__project_manager = cont.id
+
+LEFT JOIN `rax-landing.salesforce_ods.qaccount` AS qa
+  ON project.pse__account = qa.id
+
+LEFT JOIN `rax-landing.salesforce_ods.qopportunity` AS opp
+  ON project.pse__opportunity = opp.id
+
+LEFT JOIN `rax-landing.salesforce_ods.qrecordtype` AS rt
+  ON milestone.recordtypeid = rt.id  
+
+LEFT JOIN `rax-landing.salesforce_ods.quser` AS quo
+  ON LOWER(project.pse__opportunity_owner) = LOWER(quo.id)
+
+LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr 
+  ON cr.delete_flag = 'N'
+ AND cr.isocode = milestone.currencyisocode
+ AND cr.nextstartdate > '3000-01-01'
+
+WHERE 
+  project.pse__stage IN (
+    'Completed', 'On Hold', 'In Progress',
+    'Pending Project Complete - Finalize Invoicing', 'De-booked',
+    'Planning', 'Pre-Sales'
+  )
+  AND opp.stagename IN (
+    'Closed Won','Stage 3 - Proposal & Quote',
+    'Stage 2 - Opportunity Development','Stage 1 - Planning & Identification',
+    'Stage 4 - Negotiation & Quote Mod','Stage 5 - Closing the Business'
+  )
+  AND opp.support_unit IN ('Private Cloud PS','PVC MicroPS','Private Cloud PS EE','PVC DBA')
+  AND SAFE_CAST(project.pse__start_date AS DATE) > '2022-12-31'
+  AND LOWER(project.project_business_unit) = 'private'
+  AND opp.namex NOT IN ('dummy', 'cancelled')
+  AND project.namex NOT IN ('CANCELLED', 'Incorrect currency', 'TO be CANCELLED', 'INCORRECT CURRENCY', 'Cancelled')
+  AND practice.namex NOT IN ('SAP', 'ORACLE')
+  AND milestone.pse__status NOT IN ('Cancelled')
+  AND milestone.namex NOT IN ('debook','de-book','de book','debooked')
+  AND milestone.isdeleted = 'false'
+  AND project.isdeleted = 'false'
+
+ORDER BY 
+  Opportunity_Num;
