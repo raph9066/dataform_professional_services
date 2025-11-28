@@ -1,3 +1,8 @@
+config { 
+    type: "view",
+    tags: "daily"
+ }
+
 SELECT 
   opp.opportunity_id AS Opportunity_Num,
   opp.namex AS Opportunity_Name,
