@@ -1,0 +1,14 @@
+config {
+  type: "incremental",
+  tags: "daily",
+  bigquery: {
+    partitionBy: "snapshot_date"
+  }
+
+}
+
+SELECT 
+  *,
+  Date(CURRENT_DATE()) AS snapshot_date  -- Adds the current date as the snapshot date
+FROM 
+  ${ref("Revenue_Report_PS_EE_MicroPS_DBsow")}
