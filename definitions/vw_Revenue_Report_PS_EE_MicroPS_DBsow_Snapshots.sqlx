@@ -1,0 +1,41 @@
+config {
+  type: "view",
+  tags: "daily",
+}
+
+WITH
+  project_latest_info AS (
+    SELECT distinct
+      Opportunity_Num,
+      Opportunity_Name,
+      `Project: Project ID`,
+      `Project: Project Name`,
+      Support_Unit
+    FROM
+      (
+        SELECT
+          *,
+          ROW_NUMBER()
+            OVER (
+              PARTITION BY `Project: Project ID` ORDER BY snapshot_date DESC
+            ) AS rn
+        FROM
+          `rax-datascience.professional_services.Revenue_Report_PS_EE_MicroPS_DBsow_Snapshots`
+      )
+    WHERE rn = 1
+  )
+SELECT
+  b.*,
+  a.*
+    EXCEPT (
+      Opportunity_Num,
+      Opportunity_Name,
+      `Project: Project ID`,
+      `Project: Project Name`,
+      Support_Unit)
+FROM
+  `rax-datascience.professional_services.Revenue_Report_PS_EE_MicroPS_DBsow_Snapshots`
+    AS a
+LEFT JOIN project_latest_info AS b
+  ON a.`Project: Project ID` = b.`Project: Project ID`
+--where a.`Project: Project ID` = 'PR-028030'
