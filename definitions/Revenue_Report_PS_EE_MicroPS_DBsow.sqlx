@@ -84,7 +84,7 @@ WHERE
   AND opp.stagename IN (
     'Closed Won','Stage 3 - Proposal & Quote',
     'Stage 2 - Opportunity Development','Stage 1 - Planning & Identification',
-    'Stage 4 - Negotiation & Quote Mod','Stage 5 - Closing the Business', 'Closed Won'
+    'Stage 4 - Negotiation & Quote Mod','Stage 5 - Closing the Business', 'Closed Lost'
   )
   AND opp.support_unit IN ('Private Cloud PS','PVC MicroPS','Private Cloud PS EE','PVC DBA')
   AND SAFE_CAST(project.pse__start_date AS DATE) > '2022-12-31'
