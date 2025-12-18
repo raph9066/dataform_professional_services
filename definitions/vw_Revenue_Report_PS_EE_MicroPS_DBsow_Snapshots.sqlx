@@ -19,8 +19,7 @@ WITH
             OVER (
               PARTITION BY `Project: Project ID` ORDER BY snapshot_date DESC
             ) AS rn
-        FROM
-          `rax-datascience.professional_services.Revenue_Report_PS_EE_MicroPS_DBsow_Snapshots`
+        FROM ${ref("Revenue_Report_PS_EE_MicroPS_DBsow_Snapshots")}
       )
     WHERE rn = 1
   )
@@ -33,8 +32,7 @@ SELECT
       `Project: Project ID`,
       `Project: Project Name`,
       Support_Unit)
-FROM
-  `rax-datascience.professional_services.Revenue_Report_PS_EE_MicroPS_DBsow_Snapshots`
+FROM ${ref("Revenue_Report_PS_EE_MicroPS_DBsow_Snapshots")}
     AS a
 LEFT JOIN project_latest_info AS b
   ON a.`Project: Project ID` = b.`Project: Project ID`
