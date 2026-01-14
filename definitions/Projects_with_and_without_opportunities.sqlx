@@ -76,4 +76,4 @@ where
 proj.isdeleted = 'false'
 and proj.pse__stage in ('Planning','In Progress', 'On Hold', 'Pending Project Complete - Finalize Invoicing')
 and lower(proj.project_business_unit) = 'private'
-and practice.namex  not in  ('Private Cloud Micro PS','SAP','ORACLE')
+and practice.namex  not in  ('SAP','ORACLE')
