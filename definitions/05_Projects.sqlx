@@ -14,7 +14,7 @@ SELECT
     proj.pse__project_type AS `Project Type`,
     proj.pse__project_status AS `Project Status`,
     proj.pse__is_active AS `Active`,
-    proj.pse__group AS `Group`,---find
+    proj.pse__group AS `Group`,
     proj.pse__billing_type AS `Billing Type`,
     opp.typex AS `Opportunity: Type`,
     rt.namex AS `PS Project: Record Type`,
@@ -63,36 +63,42 @@ SELECT
     proj.ffx_psr_nextweek_ending_date AS `PSR Next Week Ending Date`,
     proj.psr_email_address AS `PSR Email Address`,
     practice.namex as `Practice`,
-    proj.project_category as `Project Category`
+    proj.project_category as `Project Category`,
+    notes_history.all_notes AS `All Notes`
 FROM 
     `rax-landing.salesforce_ods.qpse__proj` AS proj
 LEFT JOIN 
     `rax-landing.salesforce_ods.qopportunity` AS opp
 ON 
     proj.pse__opportunity = opp.id
-left join
+LEFT JOIN
     `rax-landing.salesforce_ods.qpse__region` r
 ON proj.pse__region = r.id
-
-
-left Join 
+LEFT JOIN 
     `rax-landing.salesforce_ods.qpse__practice` as practice
-on
-proj.pse__practice = practice.id
-
-left join `rax-landing.salesforce_ods.qcontact` as cont on proj.pse__project_manager = cont.id
-
-left JOIN `rax-landing.salesforce_ods.qrecordtype` as rt on proj.recordtypeid = rt.id  
-
-left join rax-landing.salesforce_ods.quser as quo
-on lower(opp.ownerid) = lower(quo.id)
-
- LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
+ON
+    proj.pse__practice = practice.id
+LEFT JOIN `rax-landing.salesforce_ods.qcontact` as cont on proj.pse__project_manager = cont.id
+LEFT JOIN `rax-landing.salesforce_ods.qrecordtype` as rt on proj.recordtypeid = rt.id  
+LEFT JOIN rax-landing.salesforce_ods.quser as quo
+ON lower(opp.ownerid) = lower(quo.id)
+LEFT JOIN `rax-landing.salesforce_ods.qdatedconversionrate` AS cr ON 1 = 1
   AND cr.delete_flag = 'N'
   AND cr.isocode = proj.currencyisocode
   AND cr.nextstartdate > '3000-01-01'
-
-where opp.closedate > '2021-01-01'
-and proj.isdeleted = 'false'
-
+LEFT JOIN (
+    SELECT 
+        parentid AS project_id,
+        STRING_AGG(
+            CONCAT(FORMAT_DATE('%d-%b', DATE(PARSE_TIMESTAMP('%Y-%m-%d %H:%M:%S', createddate))), ' : ', newvalue),
+            '\n'
+            ORDER BY createddate DESC
+        ) AS all_notes
+    FROM `rax-landing.salesforce_ods.qpse__proj__history`
+    WHERE field = 'pse__Project_Status_Notes__c'
+    GROUP BY parentid
+) AS notes_history
+ON proj.id = notes_history.project_id
+WHERE opp.closedate > '2021-01-01'
+AND proj.isdeleted = 'false'
 
