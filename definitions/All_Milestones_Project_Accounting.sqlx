@@ -68,6 +68,7 @@ WHERE
    safe_cast(milestone.pse__target_date as date) > '2021-01-01'
   and safe_cast(project.pse__start_date as date) > '2021-01-01'
    and lower(project.project_business_unit) = 'private'
+   and project.sfdc_project_status not in  ('Cancelled')
     and practice.namex  not in  ('SAP','ORACLE')
     and milestone.pse__status not in ('Cancelled')
      and milestone.namex not in ('debook','de-book','de book','debooked')
