@@ -63,7 +63,8 @@ WHERE
   and safe_cast(project.pse__start_date as date) > '2021-01-01'
    and lower(project.project_business_unit) = 'private'
     and practice.namex  not in  ('Private Cloud Micro PS','SAP','ORACLE')
-
+and project.sfdc_project_status not in  ('Cancelled')
    
     and milestone.isdeleted = 'false'
     AND project.isdeleted = 'false'
+    
