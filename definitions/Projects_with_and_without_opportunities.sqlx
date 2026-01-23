@@ -75,6 +75,6 @@ proj.pse__practice = practice.id
 where
 proj.isdeleted = 'false'
 and proj.pse__stage in ('Planning','In Progress', 'On Hold', 'Pending Project Complete - Finalize Invoicing')
-and proj.sfdc_project_status not in  ('Cancelled')
+  AND (proj.sfdc_project_status IS NULL OR proj.sfdc_project_status != 'Cancelled')
 and lower(proj.project_business_unit) = 'private'
 and practice.namex  not in  ('SAP','ORACLE')
