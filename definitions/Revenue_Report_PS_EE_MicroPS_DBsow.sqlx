@@ -81,6 +81,7 @@ WHERE
     'Pending Project Complete - Finalize Invoicing', 'De-booked',
     'Planning', 'Pre-Sales'
   )
+  AND proj.sfdc_project_status not in  ('Cancelled')
   AND opp.stagename IN (
     'Closed Won','Stage 3 - Proposal & Quote',
     'Stage 2 - Opportunity Development','Stage 1 - Planning & Identification',
