@@ -101,4 +101,6 @@ LEFT JOIN (
 ON proj.id = notes_history.project_id
 WHERE opp.closedate > '2021-01-01'
 AND proj.isdeleted = 'false'
+and proj.pse__stage not in ('Cancelled')
+and proj.sfdc_project_status not in  ('Cancelled')
 
