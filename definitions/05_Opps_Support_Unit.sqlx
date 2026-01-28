@@ -68,6 +68,10 @@ where
   1=1
   AND opp.isdeleted = 'false'
   AND f.isdeleted = 'false'
-  AND opp.support_unit IN ('Private Cloud PS EE','Private Cloud PS','PVC MicroPS','PVC DBA')
+   AND (
+    (opp.support_unit = 'PVC DBA' AND typex = 'Professional Services')
+    OR
+    (opp.support_unit IN ('Private Cloud PS EE','Private Cloud PS','PVC MicroPS'))
+)
 ))
 select distinct * from final_query
