@@ -69,7 +69,7 @@ where
   AND opp.isdeleted = 'false'
   AND f.isdeleted = 'false'
    AND (
-    (opp.support_unit = 'PVC DBA' AND typex = 'Professional Services')
+    (opp.support_unit = 'PVC DBA' AND opp.typex = 'Professional Services')
     OR
     (opp.support_unit IN ('Private Cloud PS EE','Private Cloud PS','PVC MicroPS'))
 )
