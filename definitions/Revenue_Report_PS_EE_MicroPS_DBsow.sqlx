@@ -98,7 +98,7 @@ WHERE
          AND opp.typex = 'Professional Services')
       )
   AND SAFE_CAST(project.pse__start_date AS DATE) > '2022-12-31'
-  AND LOWER(project.project_business_unit) = 'private'
+  ---AND LOWER(project.project_business_unit) = 'private'
   AND NOT REGEXP_CONTAINS(LOWER(opp.namex), r'(dummy|cancelled)')
   AND NOT REGEXP_CONTAINS(LOWER(project.namex), r'(cancelled|incorrect currency|to be cancelled)')
   AND practice.namex NOT IN ('SAP', 'ORACLE')
