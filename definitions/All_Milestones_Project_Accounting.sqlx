@@ -30,7 +30,13 @@ SELECT
     project.pse__billing_type AS `Project Billing Type`,
     rt.namex AS `Milestone: Record Type`,
     project.project_category AS `Project: Project Category`, 
-    practice.namex as `Practice`
+    practice.namex as `Practice`,
+     opp.opportunity_id AS Opportunity_Num,
+  opp.namex AS Opportunity_Name,
+  opp.forecast_status AS Forecast_Status,
+  opp.stagename AS Opp_Stage,
+  SAFE_CAST(opp.closedate AS DATE) AS Close_Date,
+  opp.support_unit AS Support_Unit
 
 FROM 
     `rax-landing.salesforce_ods.qpse__milestone` AS milestone
