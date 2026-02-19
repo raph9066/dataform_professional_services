@@ -67,8 +67,18 @@ on lower(project.pse__opportunity_owner) = lower(quo.id)
 WHERE 
    safe_cast(milestone.pse__target_date as date) > '2021-01-01'
   and safe_cast(project.pse__start_date as date) > '2021-01-01'
-   and lower(project.project_business_unit) = 'private'
-   ---AND (proj.pse__stage IS NULL OR proj.pse__stage != 'Cancelled')
+  AND (
+        opp.support_unit IN (
+          'Private Cloud PS',
+          'PVC MicroPS',
+          'Private Cloud PS EE'
+        )
+        OR
+        (opp.support_unit = 'PVC DBA'
+         AND opp.typex = 'Professional Services')
+      )
+   ----and lower(project.project_business_unit) = 'private'
+   ----AND (proj.pse__stage IS NULL OR proj.pse__stage != 'Cancelled')
   AND (project.sfdc_project_status IS NULL OR project.sfdc_project_status != 'Cancelled')
     and practice.namex  not in  ('SAP','ORACLE')
     and milestone.pse__status not in ('Cancelled')
