@@ -99,8 +99,8 @@ LEFT JOIN (
     GROUP BY parentid
 ) AS notes_history
 ON proj.id = notes_history.project_id
-WHERE opp.closedate > '2021-01-01'
-AND proj.isdeleted = 'false'
+---WHERE opp.closedate > '2021-01-01'
+WHERE proj.isdeleted = 'false'
 AND (proj.pse__stage IS NULL OR proj.pse__stage != 'Cancelled')
   AND (proj.sfdc_project_status IS NULL OR proj.sfdc_project_status != 'Cancelled')
 
