@@ -66,8 +66,8 @@ on p.pse__project_manager = qc2.id
 
 where 1=1
 and lower(e.pse__time_period_type) = 'week'
-and lower(p.project_business_unit)  in ('private','public')
+---and lower(p.project_business_unit)  in ('private','public')
 and   e.isdeleted = 'false'
 and   p.isdeleted = 'false'
 and   a.isdeleted = 'false'
---and  p.pse__project_id = 'PR-018477'
+---and  p.pse__project_id = 'PR-028968'
