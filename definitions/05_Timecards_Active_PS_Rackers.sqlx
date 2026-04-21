@@ -50,6 +50,7 @@ final_query as
   Project.pse__project_id  AS Project,
   Project.namex AS `PS Project: Project Name`,
   Project.pse__project_id AS `Project ID`,
+  opp.lbi__latticeaccountname AS `Account Name`,
   a.namex AS Assignment,
   qc.namex AS Resource,
   
@@ -93,6 +94,11 @@ LEFT JOIN
     `rax-landing.salesforce_ods.qpse__proj` AS project
 ON 
    tc.pse__project = project.id
+
+LEFT JOIN 
+    `rax-landing.salesforce_ods.qopportunity` AS opp
+ON 
+    project.pse__opportunity = opp.id
 
    left join `rax-landing.salesforce_ods.qpse__assignment` as a
 on tc.pse__assignment = a.id
